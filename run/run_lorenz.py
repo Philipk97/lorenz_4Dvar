@@ -19,13 +19,13 @@ import numpy as np
 
 dt = 0.01 # temporal discretisation
 parameters = [20.,28,5.] # true parameters of the model
-t_simu = 30. # time of simulation
+t_simu = 40. # time of simulation
 
 condi_ini = np.array([10.,5.,10.]) # initial condition
 
 # true model, reference
 Lor = Model(dt,t_simu,parameters,condi_ini,scheme='euler')
-Lor.forward(10000)
+Lor.forward(3000)
 
 # fig, axs = plt.subplots(3,1,figsize=(15,5))
 # i = -1
@@ -36,3 +36,4 @@ Lor.forward(10000)
 
 fig, ax = plt.subplots()
 ax.plot(Lor.xvar_series[:,0],Lor.xvar_series[:,2])
+plt.show()

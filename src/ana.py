@@ -105,6 +105,7 @@ class Variational :
         J = self.cost(X)
         G = self.grad(X)
         L_plot = [] # list containing test values for plot option
+        print("** GRADIENT TEST **\n")
         for i in range(deg) :
             test = 1 - (self.cost(X+10**-i*dX)-J)/np.dot(G,10**-i*dX)
             print(test)
@@ -117,6 +118,7 @@ class Variational :
             plt.gca().invert_xaxis()
             ax.plot(L_prec,L_plot)
             fig.show()
+            plt.show()
         
         
         

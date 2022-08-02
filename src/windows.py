@@ -6,9 +6,12 @@ Created on Wed Mar 31 15:40:15 2021
 @author: renamatt
 """
 
-from src import lorenz as lor
-from src import obs
-from src import ana
+#import sys
+#sys.path.append('.')
+
+import lorenz as lor
+import obs
+import ana
 from scipy.optimize import minimize
 import numpy as np
 
