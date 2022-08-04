@@ -16,7 +16,7 @@ from scipy.optimize import minimize
 import numpy as np
 
 
-def assimil(n_window,n_step,n_assimil,n_simul,dt,param_true,param_assimil,n_sub,X0,Xb,scheme=None) :
+def assimil(n_window,n_step,n_assimil,n_simul,dt,t_simu,param_true,param_assimil,n_sub,X0,Xb,scheme=None) :
     '''
     Run multiple assimilation window from time 0 to final time
     PARMETERS :
@@ -31,7 +31,7 @@ def assimil(n_window,n_step,n_assimil,n_simul,dt,param_true,param_assimil,n_sub,
         - M_ana : the model contening the analysed trajectory
     '''
     # create and run true model
-    M_true = lor.Model(dt,param_true,X0,n_simul,scheme=scheme)
+    M_true = lor.Model(dt,t_simu,param_true,X0,n_simul,scheme=scheme)
     M_true.forward(n_simul-1)
     
     # create obs operator
@@ -40,15 +40,15 @@ def assimil(n_window,n_step,n_assimil,n_simul,dt,param_true,param_assimil,n_sub,
     B = np.eye(3) # background error covariance matrix
     
     # create analysed model
-    M_ana = lor.Model(dt,param_assimil,Xb,n_simul)
+    M_ana = lor.Model(dt,t_simu,param_assimil,Xb,n_simul)
     for k in range(0,n_assimil) :
         print(f'\n** window {k+1} **\n')
         first_window = k==0 # indicate when first assimilation window is running
         if first_window :
-            x_res = ana_4Dvar(dt,param_assimil,n_window,Xb=Xb,R=R,Obs=Obs)
+            x_res = ana_4Dvar(dt,t_simu,param_assimil,n_window,Xb=Xb,R=R,Obs=Obs)
         else :
             Xb = np.copy(M_ana.xvar_series[k*n_step])
-            x_res = ana_4Dvar(dt,param_assimil,n_window,Xb=Xb,R=R,B=B,Obs=Obs,i0=k*n_step)
+            x_res = ana_4Dvar(dt,t_simu,param_assimil,n_window,Xb=Xb,R=R,B=B,Obs=Obs,i0=k*n_step)
         
         M_ana.xvar = x_res
         
@@ -56,14 +56,14 @@ def assimil(n_window,n_step,n_assimil,n_simul,dt,param_true,param_assimil,n_sub,
         
         start = k*n_step
         if last_window :
-            M_ana.forward(n_window,start=start)
+            M_ana.forward(n_window)
         else :
-            M_ana.forward(n_step,start=start)
+            M_ana.forward(n_step)
     
     return M_true,M_ana, Obs
 
 
-def ana_4Dvar(dt,param,n_iter,Xb=None,B=None,R=None,Obs=None,i0=0) :
+def ana_4Dvar(dt,t_simu,param,n_iter,Xb=None,B=None,R=None,Obs=None,i0=0) :
     '''
     Perform a 4Dvar assimilation and return the result of the assimilation
     PARAMETERS :
@@ -78,7 +78,7 @@ def ana_4Dvar(dt,param,n_iter,Xb=None,B=None,R=None,Obs=None,i0=0) :
         - Xout , result of the assimilation, initial coordinates that best fits observations and background
     '''
     # model to analyse
-    M = lor.Model(dt,param,np.ones(3),n_iter)
+    M = lor.Model(dt,t_simu,param,np.ones(3),n_iter)
     Var = ana.Variational(Xb=Xb,B=B,R=R,M=M,Obs=Obs,i0=i0)
     X0 = np.copy(Xb)
     res = minimize(Var.cost,X0,options={'disp':True},jac=Var.grad)

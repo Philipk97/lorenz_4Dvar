@@ -22,8 +22,8 @@ import numpy as np
 #########################
 
 dt = 0.01 # temporal discretisation
-parameters = [10.,11.,5.] # true parameters of the model
-t_simu = 0.3 # number of iteration of the simulation
+parameters = [10.,28.,8/3] # true parameters of the model
+t_simu = 100 # number of iteration of the simulation
 
 
 #########################
@@ -31,7 +31,7 @@ t_simu = 0.3 # number of iteration of the simulation
 #########################
 
 # background state
-Xb = np.array([8.,1.,5.])
+Xb = np.array([0.93,0.,-13.60])
 # background covariance error matrix
 sigma_b = 1.
 Pb = sigma_b*np.eye(3)
@@ -43,27 +43,27 @@ R = sigma_y*np.eye(3)
 #########################
 # TRUE MODEL
 #########################
-condi_ini = np.array([10.,5.,4.]) # initial condition
+condi_ini = np.array([0.93,0.,-14.60]) # initial condition
 
 # true model, reference
 Lor_true = Model(dt,t_simu,parameters,condi_ini)
-Lor_true.forward(30)
+Lor_true.forward(9999)
 
 #########################
 # background model
 #########################
 
 Lor_back = Model(dt,t_simu,parameters,Xb)
-Lor_back.forward(30)
+Lor_back.forward(9999)
 
 #########################
 # observation parameter
 #########################
-n_sub = 5 # number of iteration between two observation
+n_sub = 1 # number of iteration between two observation
 
-T_obs = [i*n_sub*dt for i in range(1,n_simul//n_sub)]
+T_obs = [i*n_sub*dt for i in range(1,int(dt*t_simu))]
 
-Obs = obs.Observation(T_obs,n_simul)
+Obs = obs.Observation(int(dt*t_simu),n_sub)
 
 Obs.gen_obs(Lor_true)
 
@@ -77,7 +77,7 @@ delta_x = coef * np.random.random(3)
 new_condi_ini = condi_ini + delta_x
 
 # analysed model
-Lor_ana = Model(dt,parameters,new_condi_ini,n_simul)
+Lor_ana = Model(dt,t_simu,parameters,new_condi_ini)
 
 Var = ana.Variational(Xb, Pb, R, Lor_ana, Obs)
 
@@ -99,7 +99,7 @@ Lor_ana.x0 = res.x
 
 Lor_ana.re_initiate()
 
-Lor_ana.forward(n_simul) # store assimilation trajectory
+Lor_ana.forward(int(t_simu*dt)) # store assimilation trajectory
 
 t_obs = list(Obs.obs.keys())
 t_obs.sort()

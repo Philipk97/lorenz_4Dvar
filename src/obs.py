@@ -22,7 +22,7 @@ class Observation :
         '''
         
         # list of all iteration where observations are available
-        self.iter_obs = [i for i in range(0,n_simul,n_sub)]
+        self.iter_obs = [i for i in range(0,n_simul//n_sub)]
         
         # standard deviation of the observation
         self.std = std

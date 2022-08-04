@@ -18,14 +18,14 @@ import numpy as np
 ##### parameter of simulation ####
 
 dt = 0.01 # temporal discretisation
-parameters = [20.,28,5.] # true parameters of the model
-t_simu = 40. # time of simulation
+parameters = [10.,28.,8/5] # true parameters of the model
+t_simu = 10000. # time of simulation
 
-condi_ini = np.array([10.,5.,10.]) # initial condition
+condi_ini = np.array([0.93,0.,-14.60]) # initial condition
 
 # true model, reference
-Lor = Model(dt,t_simu,parameters,condi_ini,scheme='euler')
-Lor.forward(3000)
+Lor = Model(dt,t_simu,parameters,condi_ini,scheme='RK4')
+Lor.forward(1000000)
 
 # fig, axs = plt.subplots(3,1,figsize=(15,5))
 # i = -1

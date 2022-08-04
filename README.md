@@ -14,4 +14,6 @@ Where $\sigma$, $\rho$ and $\beta$ are three real numbers.
 The repository includes modules to calculate forward, tangent linear and adjoint trajectories. There are also further modules to minimise the cost function and to assimilate data. 
 
 # Modifications by Philip Kennedy include:
-Improvements test script
+Improvements test.py
+Changes to lorenz.py test function
+Fixes to run_windows.py and run_multiple_windows.py

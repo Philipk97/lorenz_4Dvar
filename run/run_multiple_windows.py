@@ -6,11 +6,12 @@ Created on Mon Mar 29 15:54:38 2021
 @author: renamatt
 """
 import sys
-sys.path.append('../')
+sys.path.append('../src')
 
-from src import lorenz as lor
-from src import obs
-from src import windows as wdw
+import lorenz as lor
+import obs
+import windows as wdw
+sys.path.append('../')
 import diagnostic as diag
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,17 +25,18 @@ import numpy as np
 
 
 dt = 0.01 # temporal discretisation
-parameters = [10.,28.,4/3] # true parameters of the model
-X0 = np.array([-3.,2.,10.])
+t_simu = 1.0
+parameters = [10.,28.,8/3] # true parameters of the model
+X0 = np.array([0.93,0.00,-14.60])
 
 # numerical scheme : euler,
 # sch = 'euler'
 scheme = 'RK4'
 
 # assimilation windows parameters
-n_window = 30 # number of iteration contained in an assimilation window (need to be even)
+n_window = 20 # number of iteration contained in an assimilation window (need to be even)
 n_step = n_window//2 # number of iteration between two assimilation, the window cross each other
-n_assimil = 7 # number of assimilation windows
+n_assimil = 9 # number of assimilation windows
 n_simul = (1+n_assimil)*n_step # number of iteration of the simulation
 
 
@@ -43,7 +45,7 @@ n_simul = (1+n_assimil)*n_step # number of iteration of the simulation
 #########################
 
 # one observation every n_sub iteration
-n_sub = 5 # number of iteration between two observations
+n_sub = 1 # number of iteration between two observations
 
 
 #########################
@@ -52,14 +54,14 @@ n_sub = 5 # number of iteration between two observations
 
 # new parametrs for assimilation
 # delta for each parameters
-d_param = [0., 0., 0.5] # d sigma, d rho, d beta
+d_param = [0., -0.05, 0.] # d sigma, d rho, d beta
 par_assimil = []
 for i in range(3) :
     new_param = parameters[i] + d_param[i]
     par_assimil.append(new_param)
 
 # initial background state
-Xb = np.array([8.,1.,5.])
+Xb = np.array([0.93,0.00,-14.60])
 
 
 ###############################################################################
@@ -70,7 +72,7 @@ Xb = np.array([8.,1.,5.])
 # run assimilation
 #########################
 
-M_true,M_ana, Obs = wdw.assimil(n_window,n_step,n_assimil,n_simul,dt,parameters,\
+M_true,M_ana, Obs = wdw.assimil(n_window,n_step,n_assimil,n_simul,dt,t_simu,parameters,\
                             par_assimil,n_sub,X0,Xb,scheme=scheme)
 
 #########################
@@ -115,7 +117,8 @@ ax.plot(time_window,score_wdw,'o',color='red')
 ax.set_ylim(bottom=0.8)
 ax.set_ylabel("score")
 ax.set_xlabel("time, s")
-
+fig.show()
+plt.show()
 
 
 
